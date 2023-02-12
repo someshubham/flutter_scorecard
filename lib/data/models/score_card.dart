@@ -515,10 +515,7 @@ class Players {
     required this.battingStyle,
     required this.bowlingStyle,
     required this.fieldingPosition,
-    required this.recentMatch,
-    required this.recentAppearance,
     required this.fantasyPlayerRating,
-    required this.t,
     required this.nationality,
     required this.role,
   });
@@ -538,10 +535,7 @@ class Players {
   late final String battingStyle;
   late final String bowlingStyle;
   late final String fieldingPosition;
-  late final int recentMatch;
-  late final int recentAppearance;
   late final double? fantasyPlayerRating;
-  late final int t;
   late final String nationality;
   late final String role;
 
@@ -562,12 +556,17 @@ class Players {
     battingStyle = json['batting_style'];
     bowlingStyle = json['bowling_style'];
     fieldingPosition = json['fielding_position'];
-    recentMatch = json['recent_match'];
-    recentAppearance = json['recent_appearance'];
-    fantasyPlayerRating = json['fantasy_player_rating'];
-    t = json['t'];
+    fantasyPlayerRating = checkDouble(json['fantasy_player_rating']);
     nationality = json['nationality'];
     role = json['role'];
+  }
+
+  static double checkDouble(dynamic value) {
+    if (value is String) {
+      return double.parse(value);
+    } else {
+      return value.toDouble();
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -588,10 +587,7 @@ class Players {
     _data['batting_style'] = battingStyle;
     _data['bowling_style'] = bowlingStyle;
     _data['fielding_position'] = fieldingPosition;
-    _data['recent_match'] = recentMatch;
-    _data['recent_appearance'] = recentAppearance;
     _data['fantasy_player_rating'] = fantasyPlayerRating;
-    _data['t'] = t;
     _data['nationality'] = nationality;
     _data['role'] = role;
     return _data;
@@ -765,61 +761,64 @@ class Innings {
 
 class Batsmen {
   Batsmen({
-    required this.name,
-    required this.batsmanId,
-    required this.batting,
-    required this.position,
-    required this.role,
-    required this.roleStr,
-    required this.runs,
-    required this.ballsFaced,
-    required this.fours,
-    required this.sixes,
-    required this.run0,
-    required this.run1,
-    required this.run2,
-    required this.run3,
-    required this.run5,
-    required this.howOut,
-    required this.dismissal,
-    required this.strikeRate,
-    required this.bowlerId,
-    required this.firstFielderId,
-    required this.secondFielderId,
-    required this.thirdFielderId,
+    this.name,
+    this.batsmanId,
+    this.batting,
+    this.position,
+    this.role,
+    this.roleStr,
+    this.runs,
+    this.ballsFaced,
+    this.fours,
+    this.sixes,
+    this.run0,
+    this.run1,
+    this.run2,
+    this.run3,
+    this.run5,
+    this.howOut,
+    this.dismissal,
+    this.strikeRate,
+    this.bowlerId,
+    this.firstFielderId,
+    this.secondFielderId,
+    this.thirdFielderId,
+    this.balls,
   });
-  late final String name;
-  late final String batsmanId;
-  late final String batting;
-  late final String position;
-  late final String role;
-  late final String roleStr;
-  late final String runs;
-  late final String ballsFaced;
-  late final String fours;
-  late final String sixes;
-  late final String run0;
-  late final String run1;
-  late final String run2;
-  late final String run3;
-  late final String run5;
-  late final String howOut;
-  late final String dismissal;
-  late final String strikeRate;
-  late final String bowlerId;
-  late final String firstFielderId;
-  late final String secondFielderId;
-  late final String thirdFielderId;
+  late final String? name;
+  late final String? batsmanId;
+  late final String? batting;
+  late final String? position;
+  late final String? role;
+  late final String? roleStr;
+  late final String? runs;
+  late final String? ballsFaced;
+  late final String? fours;
+  late final String? sixes;
+  late final String? run0;
+  late final String? run1;
+  late final String? run2;
+  late final String? run3;
+  late final String? run5;
+  late final String? howOut;
+  late final String? dismissal;
+  late final String? strikeRate;
+  late final String? bowlerId;
+  late final String? firstFielderId;
+  late final String? secondFielderId;
+  late final String? thirdFielderId;
+  late final String? balls;
 
   Batsmen.fromJson(Map<String, dynamic> json) {
     name = json['name'];
-    batsmanId = json['batsman_id'];
+    batsmanId = json['batsman_id'].toString();
     batting = json['batting'];
     position = json['position'];
     role = json['role'];
     roleStr = json['role_str'];
-    runs = json['runs'];
+    runs = json['runs'].toString();
     ballsFaced = json['balls_faced'];
+    balls = json['balls']?.toString() ?? "";
     fours = json['fours'];
     sixes = json['sixes'];
     run0 = json['run0'];
@@ -846,6 +845,7 @@ class Batsmen {
     _data['role_str'] = roleStr;
     _data['runs'] = runs;
     _data['balls_faced'] = ballsFaced;
+    _data['balls'] = balls;
     _data['fours'] = fours;
     _data['sixes'] = sixes;
     _data['run0'] = run0;
@@ -1167,15 +1167,23 @@ class CurrentPartnership {
   });
   late final int runs;
   late final int balls;
-  late final int? overs;
+  late final double? overs;
   late final List<Batsmen> batsmen;
 
   CurrentPartnership.fromJson(Map<String, dynamic> json) {
     runs = json['runs'];
     balls = json['balls'];
-    overs = json['overs'];
+    overs = checkDouble(json['overs']);
     batsmen =
         List.from(json['batsmen']).map((e) => Batsmen.fromJson(e)).toList();
+  }
+
+  static double checkDouble(dynamic value) {
+    if (value is String) {
+      return double.parse(value);
+    } else {
+      return value.toDouble();
+    }
   }
 
   Map<String, dynamic> toJson() {
