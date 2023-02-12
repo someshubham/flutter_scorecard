@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_scorecard/app/env.dart';
+import 'package:flutter_scorecard/modules/match/match_summary.dart';
 import 'package:flutter_scorecard/widgets/flavor_banner.dart';
 
 class MyApp extends StatefulWidget {
@@ -20,7 +21,7 @@ class _MyAppState extends State<MyApp> {
     return FlavorBanner(
       flavor: widget.flavor,
       child: const MaterialApp(
-        home: Scaffold(),
+        home: MatchSummary(),
       ),
     );
   }

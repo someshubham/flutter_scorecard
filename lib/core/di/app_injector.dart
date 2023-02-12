@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_scorecard/app/env.dart';
+import 'package:flutter_scorecard/data/repo/score_repository_impl.dart';
+import 'package:flutter_scorecard/data/score_repository.dart';
 import 'package:flutter_scorecard/network/dio_client.dart';
 import 'package:flutter_scorecard/network/i_client.dart';
 import 'package:flutter_scorecard/network/mock_client.dart';
@@ -47,5 +49,9 @@ class AppInjector {
           );
       }
     });
+
+    locator.registerLazySingleton<ScoreRepository>(
+      () => ScoreRepositoryImpl(client: locator()),
+    );
   }
 }
