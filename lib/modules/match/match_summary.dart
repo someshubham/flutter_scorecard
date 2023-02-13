@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_scorecard/modules/match/bloc/score_cubit.dart';
 import 'package:flutter_scorecard/modules/match/bloc/score_state.dart';
+import 'package:flutter_scorecard/modules/match/widgets/batsman_scorecard.dart';
 import 'package:flutter_scorecard/modules/match/widgets/summary_card.dart';
 import 'package:flutter_scorecard/modules/match/widgets/team_selector.dart';
 import 'package:flutter_scorecard/utils/after_layout_mixin.dart';
@@ -21,6 +22,8 @@ class _MatchSummaryState extends State<MatchSummary>
   late TabController tabController;
 
   bool isExpanded = false;
+
+  bool isTeamASelected = true;
 
   @override
   void initState() {
@@ -104,8 +107,11 @@ class _MatchSummaryState extends State<MatchSummary>
                           ),
                           Column(
                             children: [
-                              60.heightBox,
-                              data.matchData.title.text.make(),
+                              72.heightBox,
+                              data.matchData.title.text.bold
+                                  .color(Colors.black)
+                                  .size(16)
+                                  .make(),
                               SummaryCard(matchData: data.matchData),
                             ],
                           )
@@ -131,7 +137,20 @@ class _MatchSummaryState extends State<MatchSummary>
                       [
                         TeamSelector(
                           matchData: data.matchData,
+                          isTeamSelected: (isASelected) {
+                            setState(() {
+                              isTeamASelected = isASelected;
+                            });
+                          },
                         ),
+                        "Batting"
+                            .text
+                            .bold
+                            .color(Colors.red)
+                            .size(18)
+                            .make()
+                            .p8(),
+                        BatsmanScorecard(innings: data.innings.first)
                       ],
                     ),
                   ),
