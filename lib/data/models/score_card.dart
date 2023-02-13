@@ -17,6 +17,9 @@ class ScoreCard {
     _data['data'] = data.toJson();
     return _data;
   }
+
+  MatchData get matchData => data.matchData;
+  List<Innings> get innings => data.innings;
 }
 
 class Data {
