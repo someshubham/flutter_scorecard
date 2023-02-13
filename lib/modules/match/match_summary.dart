@@ -1,9 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_scorecard/data/models/score_card.dart';
 import 'package:flutter_scorecard/modules/match/bloc/score_cubit.dart';
 import 'package:flutter_scorecard/modules/match/bloc/score_state.dart';
+import 'package:flutter_scorecard/modules/match/widgets/summary_card.dart';
+import 'package:flutter_scorecard/modules/match/widgets/team_selector.dart';
 import 'package:flutter_scorecard/utils/after_layout_mixin.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -14,15 +15,17 @@ class MatchSummary extends StatefulWidget {
   State<MatchSummary> createState() => _MatchSummaryState();
 }
 
-class _MatchSummaryState extends State<MatchSummary> with AfterLayoutMixin {
+class _MatchSummaryState extends State<MatchSummary>
+    with AfterLayoutMixin, SingleTickerProviderStateMixin {
   late ScrollController _scrollController;
+  late TabController tabController;
 
   bool isExpanded = false;
 
   @override
   void initState() {
     super.initState();
-
+    tabController = TabController(length: 3, vsync: this);
     _scrollController = ScrollController()
       ..addListener(() {
         if (_isAppBarExpanded) {
@@ -110,18 +113,26 @@ class _MatchSummaryState extends State<MatchSummary> with AfterLayoutMixin {
                       ),
                     ),
                   ),
+                  SliverToBoxAdapter(
+                    child: TabBar(
+                      indicatorColor: Colors.red,
+                      labelColor: Colors.black,
+                      unselectedLabelColor: Colors.grey,
+                      tabs: const [
+                        Tab(text: 'Scorecard'),
+                        Tab(text: 'Squads'),
+                        Tab(text: 'Commentary'),
+                      ],
+                      controller: tabController,
+                    ),
+                  ),
                   SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (_, int index) {
-                        return ListTile(
-                          leading: Container(
-                              padding: EdgeInsets.all(8),
-                              width: 100,
-                              child: Placeholder()),
-                          title: Text('Place ${index + 1}', textScaleFactor: 2),
-                        );
-                      },
-                      childCount: 20,
+                    delegate: SliverChildListDelegate(
+                      [
+                        TeamSelector(
+                          matchData: data.matchData,
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -138,108 +149,4 @@ class _MatchSummaryState extends State<MatchSummary> with AfterLayoutMixin {
   void afterFirstLayout(BuildContext context) {
     BlocProvider.of<ScoreCubit>(context).getMatchScore(56622);
   }
-}
-
-class SummaryCard extends StatelessWidget {
-  final MatchData matchData;
-
-  const SummaryCard({super.key, required this.matchData});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(8),
-      decoration: const BoxDecoration(color: Colors.white70),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          "${matchData.competition.title} - ${matchData.title} , ${matchData.subtitle}"
-              .text
-              .make(),
-          Row(
-            children: [
-              CachedNetworkImage(
-                imageUrl: matchData.teama.logoUrl,
-                height: 60,
-              ),
-              matchData.teama.shortName.text.make(),
-              Spacer(),
-              matchData.teama.scoresFull.text.make(),
-            ],
-          ),
-          Row(
-            children: [
-              CachedNetworkImage(
-                imageUrl: matchData.teamb.logoUrl,
-                height: 60,
-              ),
-              matchData.teamb.shortName.text.make(),
-              Spacer(),
-              matchData.teamb.scoresFull.text.make(),
-            ],
-          ),
-          // ListTile(
-          //   leading: CachedNetworkImage(
-          //     imageUrl: matchData.teamb.logoUrl,
-          //     height: 60,
-          //   ),
-          //   title: matchData.teamb.shortName.text.make(),
-          //   trailing: matchData.teamb.scoresFull.text.make(),
-          // ),
-          20.heightBox,
-          Row(
-            children: [
-              matchData.statusNote.text.make(),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class MyHeaderDelegate extends SliverPersistentHeaderDelegate {
-  final MatchData matchData;
-
-  MyHeaderDelegate({required this.matchData});
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    final progress = shrinkOffset / maxExtent;
-    return Material(
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          AnimatedOpacity(
-            duration: const Duration(milliseconds: 150),
-            opacity: progress,
-            child: ColoredBox(
-              color: const Color(0xBE7A81FF),
-            ),
-          ),
-          AnimatedOpacity(
-            duration: const Duration(milliseconds: 150),
-            opacity: 1 - progress,
-            child: Image.asset(
-              'assets/cricket-bg.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-          SummaryCard(matchData: matchData)
-        ],
-      ),
-    );
-  }
-
-  @override
-  double get maxExtent => 264;
-
-  @override
-  double get minExtent => 84;
-
-  @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
-      true;
 }
